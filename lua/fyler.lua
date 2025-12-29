@@ -68,9 +68,10 @@ function M.setup(opts)
   did_setup = true
 
   local finder = require "fyler.views.finder"
+  local utils = require "fyler.lib.util"
 
   -- Fyler.API: Opens finder view with provided options
-  M.open = vim.schedule_wrap(function(args)
+  M.open = utils.schedule_wrap(function(args)
     args = args or {}
     finder.open(args.dir, args.kind)
   end)

@@ -62,7 +62,14 @@ function M.setup(config)
     desc = "Load with URI",
     nested = true,
     callback = function(arg)
-      fyler.open { dir = arg.file }
+      local wins = require("fyler.lib.util").tbl_filter(vim.fn.win_findbuf(arg.buf), function(win)
+        return vim.fn.win_gettype(win) ~= "autocmd"
+      end)
+      vim.api.nvim_win_call(wins[1] or 0, function()
+        vim.api.nvim_buf_call(arg.buf, function()
+          fyler.open { dir = arg.file }
+        end)
+      end)
     end,
   })
 end

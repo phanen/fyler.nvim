@@ -271,4 +271,31 @@ function M.parse_name(str)
   end
 end
 
+---vim.schedule_wrap but preserves context
+---@param ctx table
+---@param f function
+---@return any
+function M.with(ctx, f)
+  if vim._with then
+    return vim._with(ctx, f)
+  end
+  local buf = vim.api.nvim_get_current_buf()
+  local win = vim.api.nvim_get_current_win()
+  return vim.api.nvim_win_call(ctx.win or win, function()
+    return vim.api.nvim_buf_call(ctx.buf or buf, f)
+  end)
+end
+
+---vim.schedule_wrap but preserves context
+---@param f function
+---@return any
+function M.schedule_wrap(f)
+  return function()
+    local ctx = { win = vim.api.nvim_get_current_win(), buf = vim.api.nvim_get_current_buf() }
+    vim.schedule(function()
+      M.with(ctx, f)
+    end)
+  end
+end
+
 return M
